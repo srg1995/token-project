@@ -47,6 +47,29 @@ app.get("/protected", (req, res) => {
     }
 });
 
+app.post("/refresh-token", (req, res) => {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: "Token requerido" });
+
+    try {
+        // Verifica el token (ignora expiración temporalmente)
+        const payload = jwt.verify(token, JWT_SECRET, {
+            ignoreExpiration: true,
+        });
+
+        // Genera un nuevo token
+        const newToken = jwt.sign(
+            { sub: payload.sub, username: payload.username },
+            JWT_SECRET,
+            { expiresIn: "20s" } // mismo tiempo que el login
+        );
+
+        res.json({ token: newToken });
+    } catch (err) {
+        res.status(401).json({ error: "Token inválido" });
+    }
+});
+
 // Exporta para Vercel
 module.exports = app;
 
