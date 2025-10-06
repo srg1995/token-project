@@ -28,7 +28,7 @@ app.post("/login", (req, res) => {
     if (!user) return res.status(401).json({ error: "Credenciales inválidas" });
 
     const token = jwt.sign({ sub: user.id, username }, JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "20s",
     });
     res.json({ token });
 });
